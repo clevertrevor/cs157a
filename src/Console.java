@@ -1,104 +1,93 @@
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.Scanner;
+import javax.swing.*;
 
 /**
- * This class interfaces with the UI to provide DB functionality 
+ * This class controls flow from the user to the program.
  */
-public class Reservation {
+
+public class Console {
     
-    private Connection connection = null;
-    private PreparedStatement preparedStatement = null;
-    private ResultSet resultSet = null;
+    private static Scanner input = new Scanner(System.in);
+    private static Reservation reservation = new Reservation();
     
-    private Scanner inputScanner = new Scanner(System.in);
-    
-    public Reservation() {}
-    
-    /**
-     * Connect to the database
-     * @return boolean success or failure of connection
-     */
-    public boolean connectDB() {   
-        try {
-            this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/RReservation","root", "1234");
-        } catch (SQLException e) {
-            System.out.println("Connection failed");
-            e.printStackTrace();
+    public static void main(String[] args) {
+        
+        boolean quit = false;
+        
+        
+        
+        if(reservation.connectDB()) {
+            while (!quit) {
+                printMainMenu();
+                switch(input.next()) {
+                case "1":
+                    printLoginOptions();
+                    break;
+                case "2": 
+                    printSignupOptions();
+                    
+                    break;
+                case "3":
+                    quit = true; 
+                    break;
+                default:
+                    break;
+                }
+            }
         }
         
-        if (this.connection != null) return true;
-        else return false;
-    }
-
-    /**
-     * Inserts a customer into the database
-     * @param username
-     * @param password
-     * @param object
-     * @param name
-     * @param phone_number
-     * @return success/failure of inserting a customer
-     */
-    public boolean insertCustomer(String username, String password,
-            Object object, String name, String phone_number) {
-        try {
-            preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE my_name=?");
-            preparedStatement.setString(1, username);
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()) {
-                System.out.println("The username has already existed!");
-                return false;
-            } else {
-                
-                preparedStatement = this.connection.prepareStatement("INSERT INTO Customer (username, login_password, reservation_id, my_name, phone_number) VALUES (?, ?, ?, ?, ?)");
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
-                preparedStatement.setString(3, null);
-                preparedStatement.setString(4, name);
-                preparedStatement.setString(5, phone_number);
-                preparedStatement.executeUpdate();
-                System.out.println("Account created.");
-                return true;
-                    
+    } // end main
+    
+ // prints login options and signs up user
+    private static void printSignupOptions() {
+        
+        System.out.print("\nEnter your username: ");
+        String username = (input.hasNext())? input.next():null;
+        
+        System.out.print("\nEnter your name: ");
+        String name = (input.hasNext())? input.next():null;
+        
+        System.out.print("Enter your password: ");
+        String password = (input.hasNext())? input.next():null;
+        
+        System.out.print("");
+        
+        boolean done = false;
+        String userType = "";
+        
+        // get user type
+        while (!done) {
+            System.out.print("Signup as:\n1. Customer\n2. Manager\nEnter number> ");
+            userType = (input.hasNext())? input.next():null;
+            if (userType.equals("1")) {
+                userType = "customer";
+                System.out.print("Enter your phone number: ");
+                String phone_number = "";
+                phone_number = (input.hasNext())? input.next():null;
+                if (!reservation.insertCustomer(username, password, null, name, phone_number)) System.out.println("Customer creation failed.");
+                done = true;
+            } else if (userType.equals("2")) {
+                userType = "manager";
+                System.out.print("\nEnter your restaurantID: ");
+                String restaurantId = (input.hasNext())? input.next():null;
+                if (!reservation.insertManager(name, username, password, name, restaurantId)) System.out.println("Customer creation failed.");
+                done = true;
             }
-        } catch(Exception e) {
-            System.out.println(e.toString());
-            System.out.println(e.getMessage());
         }
-        return false;
-    }
-
-    public boolean insertManager(String name, String username, String password,
-            String name2, String restaurantId) {
-        try {
-            preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Manager WHERE my_name=?");
-            preparedStatement.setString(1, username);
-            resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()) {
-                System.out.println("The username already exists!");
-                return false;
-            } else {
-                
-                preparedStatement = this.connection.prepareStatement("INSERT INTO Manager (my_name, username, login_password, restaurant_id) VALUES (?, ?, ?, ?)");
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, username);
-                preparedStatement.setString(3, password);
-                preparedStatement.setString(4, restaurantId);
-                preparedStatement.executeUpdate();
-                System.out.println("Account created.");
-                return true;
-                    
-            }
-        } catch(Exception e) {
-            System.out.println(e.toString());
-            System.out.println(e.getMessage());
-        }
-        return false;
+        
+        
+        
     }
     
+    // prints login options
+    private static void printLoginOptions() {
+        System.out.print("Login as:\n1. Customer\n2. Manager\nEnter number> ");
+    }
+    
+    // prints the main menu options
+    private static void printMainMenu() {
+        System.out.print("\nMenu:\n1. Login\n2. Sign-Up\n3. Quit\nEnter number> ");
+    }
     
 }
