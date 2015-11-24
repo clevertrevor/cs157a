@@ -8,13 +8,16 @@ import javax.swing.*;
 
 public class Console {
     
+    private static Scanner input = new Scanner(System.in);
+    private static Reservation reservation = new Reservation();
+    
     public static void main(String[] args) {
         
         boolean quit = false;
-        Scanner input = new Scanner(System.in);
-        Reservation restaurant = new Reservation();
         
-        if(restaurant.connectDB()) {
+        
+        
+        if(reservation.connectDB()) {
             while (!quit) {
                 printMainMenu();
                 switch(input.next()) {
@@ -23,6 +26,7 @@ public class Console {
                     break;
                 case "2": 
                     printSignupOptions();
+                    
                     break;
                 case "3":
                     quit = true; 
@@ -35,9 +39,44 @@ public class Console {
         
     } // end main
     
- // prints login options
+ // prints login options and signs up user
     private static void printSignupOptions() {
-        System.out.print("Signup as:\n1. Customer\n2. Manager\nEnter number> ");
+        
+        System.out.print("\nEnter your username: ");
+        String username = (input.hasNext())? input.next():null;
+        
+        System.out.print("\nEnter your name: ");
+        String name = (input.hasNext())? input.next():null;
+        
+        System.out.print("Enter your password: ");
+        String password = (input.hasNext())? input.next():null;
+        
+        System.out.print("");
+        
+        boolean done = false;
+        String userType = "";
+        
+        // get user type
+        while (!done) {
+            System.out.print("Signup as:\n1. Customer\n2. Manager\nEnter number> ");
+            userType = (input.hasNext())? input.next():null;
+            if (userType.equals("1")) {
+                userType = "customer";
+                System.out.print("Enter your phone number: ");
+                String phone_number = "";
+                phone_number = (input.hasNext())? input.next():null;
+                if (!reservation.insertCustomer(username, password, null, name, phone_number)) System.out.println("Customer creation failed.");
+                done = true;
+            } else if (userType.equals("2")) {
+                userType = "manager";
+                System.out.print("\nEnter your restaurantID: ");
+                String restaurantId = input.next();
+                done = true;
+            }
+        }
+        
+        
+        
     }
     
     // prints login options
