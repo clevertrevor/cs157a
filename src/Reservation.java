@@ -66,11 +66,39 @@ public class Reservation {
                     
             }
         } catch(Exception e) {
-            System.out.println("does it get here");
             System.out.println(e.toString());
             System.out.println(e.getMessage());
         }
         return false;
     }
+
+    public boolean insertManager(String name, String username, String password,
+            String name2, String restaurantId) {
+        try {
+            preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Manager WHERE my_name=?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                System.out.println("The username already exists!");
+                return false;
+            } else {
+                
+                preparedStatement = this.connection.prepareStatement("INSERT INTO Manager (my_name, username, login_password, restaurant_id) VALUES (?, ?, ?, ?)");
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, username);
+                preparedStatement.setString(3, password);
+                preparedStatement.setString(4, restaurantId);
+                preparedStatement.executeUpdate();
+                System.out.println("Account created.");
+                return true;
+                    
+            }
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+    
     
 }
