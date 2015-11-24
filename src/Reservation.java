@@ -33,5 +33,44 @@ public class Reservation {
         if (this.connection != null) return true;
         else return false;
     }
+
+    /**
+     * Inserts a customer into the database
+     * @param username
+     * @param password
+     * @param object
+     * @param name
+     * @param phone_number
+     * @return success/failure of inserting a customer
+     */
+    public boolean insertCustomer(String username, String password,
+            Object object, String name, String phone_number) {
+        try {
+            preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE my_name=?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                System.out.println("The username has already existed!");
+                return false;
+            } else {
+                
+                preparedStatement = this.connection.prepareStatement("INSERT INTO Customer (username, login_password, reservation_id, my_name, phone_number) VALUES (?, ?, ?, ?, ?)");
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, password);
+                preparedStatement.setString(3, null);
+                preparedStatement.setString(4, name);
+                preparedStatement.setString(5, phone_number);
+                preparedStatement.executeUpdate();
+                System.out.println("Account created.");
+                return true;
+                    
+            }
+        } catch(Exception e) {
+            System.out.println("does it get here");
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
     
 }
