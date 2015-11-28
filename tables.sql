@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS ReservationArchive;
 SET FOREIGN_KEY_CHECKS=1;
 
--- recreate tables
 
+-- create tables
 CREATE TABLE Customer(
 	customer_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(256),
@@ -48,17 +48,34 @@ CREATE TABLE ReservationArchive( -- todo change this once archiving is figured o
     restaurant_id INTEGER, 
     customer_id INTEGER, 
     party_count INTEGER);
-    
+ 
+ 
 -- insert predefined tuples
 
--- Customer
-
 INSERT INTO Customer (username, login_password, my_name, phone_number)
-	VALUES("username1", "password1", "Customer1", "408-000-0001");
+	VALUES("username1", "password1", "Trevor Nemanic", "408-000-0001");
 INSERT INTO Customer (username, login_password, my_name, phone_number)
-	VALUES("username2", "password2", "Customer2", "408-000-0002");
+	VALUES("username2", "password2", "Calvin Keith", "408-000-0002");
 INSERT INTO Customer (username, login_password, my_name, phone_number)
-	VALUES("username3", "password3", "Customer3", "408-000-0003");
+	VALUES("username3", "password3", "Jonathan Pak", "408-000-0003");
 INSERT INTO Customer (username, login_password, my_name, phone_number)
-	VALUES("username4", "password4", "Customer4", "408-000-0004");
+	VALUES("username4", "password4", "Stephen Curry", "408-000-0004");
     
+INSERT INTO RESTAURANT(restaurant_name, capacity)
+	VALUES("Peanuts", 50);
+INSERT INTO RESTAURANT(restaurant_name, capacity)
+	VALUES("Creasian", 25);
+    
+INSERT INTO Manager(my_name, username, login_password, restaurant_id)
+	VALUES("Satya Nadella", "username1", "password1", 1);
+INSERT INTO Manager(my_name, username, login_password, restaurant_id)
+	VALUES("Tim Cook", "username2", "password2", 1);
+INSERT INTO Manager(my_name, username, login_password, restaurant_id)
+	VALUES("Ginni Rometty", "username3", "password3", 2);
+    
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-03 18:00:00', '03:00:00',  1, 1, 20);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-03 18:00:00', '01:00:00',  2, 1, 40);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-03 18:00:00', '01:00:00',  2, 1, 10);
