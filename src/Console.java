@@ -57,7 +57,6 @@ public class Console {
         String userType = "";
         
         // get user type
-        while (!done) {
             System.out.print("Signup as:\n1. Customer\n2. Manager\nEnter number> ");
             userType = (input.hasNext())? input.next():null;
             if (userType.equals("1")) {
@@ -66,25 +65,18 @@ public class Console {
                 String phone_number = "";
                 phone_number = (input.hasNext())? input.next():null;
                 if (!reservation.insertCustomer(username, password, name, phone_number)) System.out.println("Customer creation failed.");
-                done = true;
             } else if (userType.equals("2")) {
                 userType = "manager";
                 System.out.print("\nEnter your restaurantID: ");
                 String restaurantId = (input.hasNext())? input.next():null;
                 if (!reservation.insertManager(name, username, password, restaurantId)) System.out.println("Customer creation failed.");
-                done = true;
             }
-        }
-        
-        
-        
-    }
+        }        
     
     // prints login options
     private static void printLoginOptions() {
     	System.out.print("\nEnter your username: ");
-        String username = (input.hasNext())? input.next():null;
-        
+        String username = (input.hasNext())? input.next():null;    
         System.out.print("Enter your password: ");
         String password = (input.hasNext())? input.next():null;
     	String userType = "";
