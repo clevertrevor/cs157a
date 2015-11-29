@@ -99,7 +99,7 @@ public class DatabaseInterface {
         return false;
     }
     
-    public boolean systemLogin(String username, String password, boolean isManager){
+    public Object systemLogin(String username, String password, boolean isManager){
     	try{
     		if(isManager == true)
     			preparedStatement = this.connection.prepareStatement("SELECT * FROM Manager WHERE username = ? AND login_password = ?");
@@ -110,11 +110,14 @@ public class DatabaseInterface {
     		resultSet = preparedStatement.executeQuery();
     		if(resultSet.next()) {
     			String name = resultSet.getString("my_name");
-    			if(isManager == true){System.out.println("Logged in as Manager " + name);
-    			return true;
+    			if(isManager == true){
+    			return new Manager(resultSet.getInt("manager_id"), resultSet.getString("my_name"),
+    					resultSet.getString("username"), resultSet.getString("login_password"),
+    					resultSet.getInt("restaurant_id"));
     			}else{
-    				System.out.println("Logged in as Customer " + name);
-    				return true;
+    			return new Customer(resultSet.getInt("customer_id"), resultSet.getString("username"), 
+    					resultSet.getString("login_password"), resultSet.getString("my_name"),
+        					resultSet.getString("phone_number"));
     			}
     		}
     		
@@ -123,7 +126,7 @@ public class DatabaseInterface {
             System.out.println(e.toString());
             System.out.println(e.getMessage());
         }
-    	return false;
+    	return null;
     }
     
     
