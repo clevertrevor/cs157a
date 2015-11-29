@@ -3,7 +3,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * This class interfaces with the UI to provide DB functionality 
@@ -129,24 +133,42 @@ public class DatabaseInterface {
     	return null;
     }
     
-    public void viewAllReservations(int restaurantID){
+    public List<Reservation> getAllReservations(int restaurantID){
+    	List<Reservation> reservations = new ArrayList<Reservation>();
     	try {
 			preparedStatement = this.connection.prepareStatement("SELECT * FROM Reservation left join Customer on Reservation.customer_id = Customer.customer_id WHERE restaurant_id = ? ORDER BY reservation_timestamp");
 			preparedStatement.setInt(1, restaurantID);
 			resultSet = preparedStatement.executeQuery();
-			String customerName = ""; String reservationTime = ""; String reservationDuration = ""; int partyCount = 0;
-			System.out.println("Name/Reservation Time/Reservation Duration/Party Count");
+			String customerName = ""; String reservationTime = ""; String reservationDuration = ""; int partyCount = 0; int customerID = 0; int reservationID = 0;
 			while(resultSet.next()){
 				customerName = resultSet.getString("my_name");
 				reservationTime = resultSet.getTimestamp("reservation_timestamp").toString();
 				reservationDuration = resultSet.getTime("reservation_duration").toString();
 				partyCount = resultSet.getInt("party_count");
-				System.out.println(customerName + "    " + reservationTime + "   " + reservationDuration + "   " + partyCount);
+				customerID = resultSet.getInt("customer_id");
+				reservationID = resultSet.getInt("reservation_id");
+				reservations.add(new Reservation(reservationID, reservationTime, reservationDuration, restaurantID, customerID, partyCount));
 			}
 		} catch (SQLException e) {
 			System.out.println(e.toString());
             System.out.println(e.getMessage());
 		}
+    	return reservations;
+    }
+    
+    public String getCustomerNameByID(int customerID){
+    	try {
+            preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE customer_id=?");
+            preparedStatement.setInt(1, customerID);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+            	return resultSet.getString("my_name");
+            }
+    }catch (SQLException e) {
+		System.out.println(e.toString());
+        System.out.println(e.getMessage());
+	}
+    	return "No Name Found";
     }
     
     

@@ -1,4 +1,6 @@
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import javax.swing.*;
 
@@ -10,6 +12,7 @@ public class Console {
     
     private static Scanner input = new Scanner(System.in);
     private static DatabaseInterface reservation = new DatabaseInterface();
+    private static Manager manager;
     
     public static void main(String[] args) {
         
@@ -97,7 +100,7 @@ public class Console {
             customerOptions();
         }
         else if (userType.equals("2")) {
-            Manager manager = (Manager) reservation.systemLogin(username, password, true);
+            manager = (Manager) reservation.systemLogin(username, password, true);
             managerOptions(manager);
         }
         else{
@@ -149,7 +152,12 @@ public class Console {
         	String customerInput = (input.hasNext())? input.next():null;
             switch (customerInput) {
             case "1" : 
-                reservation.viewAllReservations(m.getrestaurantId());
+                List<Reservation> res = reservation.getAllReservations(m.getrestaurantId());
+                System.out.println("Name/Time/Duration/Party Count");
+                for(Reservation r : res){
+                	System.out.println(reservation.getCustomerNameByID(r.getCustomerId()) + "---" + r.getReservationTimestamp() + 
+                			"---" + r.getReservationDuration() + "---" + r.getPartyCount());
+                }
                 done = true;
                 break;
             case "2" :
