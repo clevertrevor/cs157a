@@ -104,71 +104,75 @@ public class DatabaseInterface {
     }
     
     public Object systemLogin(String username, String password, boolean isManager){
-    	try{
-    		if(isManager == true)
-    			preparedStatement = this.connection.prepareStatement("SELECT * FROM Manager WHERE username = ? AND login_password = ?");
-    		else
-    			preparedStatement = this.connection.prepareStatement("SELECT * FROM Customer WHERE username = ? AND login_password = ?");
-    		preparedStatement.setString(1, username);
-    		preparedStatement.setString(2, password);
-    		resultSet = preparedStatement.executeQuery();
-    		if(resultSet.next()) {
-    			String name = resultSet.getString("my_name");
-    			if(isManager == true){
-    			return new Manager(resultSet.getInt("manager_id"), resultSet.getString("my_name"),
-    					resultSet.getString("username"), resultSet.getString("login_password"),
-    					resultSet.getInt("restaurant_id"));
-    			}else{
-    			return new Customer(resultSet.getInt("customer_id"), resultSet.getString("username"), 
-    					resultSet.getString("login_password"), resultSet.getString("my_name"),
-        					resultSet.getString("phone_number"));
-    			}
-    		}
-    		
-    	}
-    	catch(Exception e) {
+        try{
+            if(isManager == true)
+                preparedStatement = this.connection.prepareStatement("SELECT * FROM Manager WHERE username = ? AND login_password = ?");
+            else
+                preparedStatement = this.connection.prepareStatement("SELECT * FROM Customer WHERE username = ? AND login_password = ?");
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                String name = resultSet.getString("my_name");
+                if(isManager == true){
+                return new Manager(resultSet.getInt("manager_id"), resultSet.getString("my_name"),
+                        resultSet.getString("username"), resultSet.getString("login_password"),
+                        resultSet.getInt("restaurant_id"));
+                }else{
+                return new Customer(resultSet.getInt("customer_id"), resultSet.getString("username"), 
+                        resultSet.getString("login_password"), resultSet.getString("my_name"),
+                            resultSet.getString("phone_number"));
+                }
+            }
+            
+        }
+        catch(Exception e) {
             System.out.println(e.toString());
             System.out.println(e.getMessage());
         }
-    	return null;
+        return null;
     }
     
+// Gets all reservations for a specific restaurant
     public List<Reservation> getAllReservations(int restaurantID){
-    	List<Reservation> reservations = new ArrayList<Reservation>();
-    	try {
-			preparedStatement = this.connection.prepareStatement("SELECT * FROM Reservation left join Customer on Reservation.customer_id = Customer.customer_id WHERE restaurant_id = ? ORDER BY reservation_timestamp");
-			preparedStatement.setInt(1, restaurantID);
-			resultSet = preparedStatement.executeQuery();
-			String customerName = ""; String reservationTime = ""; String reservationDuration = ""; int partyCount = 0; int customerID = 0; int reservationID = 0;
-			while(resultSet.next()){
-				customerName = resultSet.getString("my_name");
-				reservationTime = resultSet.getTimestamp("reservation_timestamp").toString();
-				reservationDuration = resultSet.getTime("reservation_duration").toString();
-				partyCount = resultSet.getInt("party_count");
-				customerID = resultSet.getInt("customer_id");
-				reservationID = resultSet.getInt("reservation_id");
-				reservations.add(new Reservation(reservationID, reservationTime, reservationDuration, restaurantID, customerID, partyCount));
-			}
-		} catch (SQLException e) {
-			System.out.println(e.toString());
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        
+        try {
+            preparedStatement = this.connection.prepareStatement(
+                    "SELECT * FROM Reservation left join Customer on Reservation.customer_id = Customer.customer_id "
+                    + "WHERE restaurant_id = ? ORDER BY reservation_timestamp");
+            preparedStatement.setInt(1, restaurantID);
+            resultSet = preparedStatement.executeQuery();
+            
+            while(resultSet.next()){
+                String reservationTime = resultSet.getTimestamp("reservation_timestamp").toString();
+                String reservationDuration = resultSet.getTime("reservation_duration").toString();
+                int partyCount = resultSet.getInt("party_count");
+                int customerID = resultSet.getInt("customer_id");
+                int reservationID = resultSet.getInt("reservation_id");
+                reservations.add(new Reservation(reservationID, reservationTime, reservationDuration, restaurantID, customerID, partyCount));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.toString());
             System.out.println(e.getMessage());
-		}
-    	return reservations;
+        }
+        return reservations;
     }
     
     public String getCustomerNameByID(int customerID){
-    	try {
+        try {
             preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE customer_id=?");
             preparedStatement.setInt(1, customerID);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
-            	return resultSet.getString("my_name");
+                return resultSet.getString("my_name");
             }
     }catch (SQLException e) {
-		System.out.println(e.toString());
+        System.out.println(e.toString());
         System.out.println(e.getMessage());
-	}
-    	return "No Name Found";
+    }
+        return "No Name Found";
     }
     
         /**
@@ -189,8 +193,8 @@ public class DatabaseInterface {
         }
         
     }
-	
-	/**
+    
+    /**
      * Creates a reservation in the database
      * @return true/false the status of reservation creation
      */
@@ -214,6 +218,6 @@ public class DatabaseInterface {
         
         return false;
     }
-	
+    
     
 }
