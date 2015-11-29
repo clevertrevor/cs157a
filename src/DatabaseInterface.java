@@ -8,7 +8,7 @@ import java.util.Scanner;
 /**
  * This class interfaces with the UI to provide DB functionality 
  */
-public class Reservation {
+public class DatabaseInterface {
     
     private Connection connection = null;
     private PreparedStatement preparedStatement = null;
@@ -16,7 +16,7 @@ public class Reservation {
     
     private Scanner inputScanner = new Scanner(System.in);
     
-    public Reservation() {}
+    public DatabaseInterface() {}
     
     /**
      * Connect to the database
