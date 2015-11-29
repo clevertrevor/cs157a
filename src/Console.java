@@ -1,3 +1,4 @@
+
 import java.util.Scanner;
 import javax.swing.*;
 
@@ -64,13 +65,13 @@ public class Console {
                 System.out.print("Enter your phone number: ");
                 String phone_number = "";
                 phone_number = (input.hasNext())? input.next():null;
-                if (!reservation.insertCustomer(username, password, null, name, phone_number)) System.out.println("Customer creation failed.");
+                if (!reservation.insertCustomer(username, password, name, phone_number)) System.out.println("Customer creation failed.");
                 done = true;
             } else if (userType.equals("2")) {
                 userType = "manager";
                 System.out.print("\nEnter your restaurantID: ");
                 String restaurantId = (input.hasNext())? input.next():null;
-                if (!reservation.insertManager(name, username, password, name, restaurantId)) System.out.println("Customer creation failed.");
+                if (!reservation.insertManager(name, username, password, restaurantId)) System.out.println("Customer creation failed.");
                 done = true;
             }
         }
