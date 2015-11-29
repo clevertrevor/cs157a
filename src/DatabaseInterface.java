@@ -171,5 +171,49 @@ public class DatabaseInterface {
     	return "No Name Found";
     }
     
+        /**
+     * Deletes this customer from the database
+     * @param customerId
+     * @return
+     */
+    public boolean deleteCustomer(int customerId) {
+
+        try {
+            preparedStatement = connection.prepareStatement("DELETE FROM Customer WHERE customer_id = " + customerId);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+            return false;
+        }
+        
+    }
+	
+	/**
+     * Creates a reservation in the database
+     * @return true/false the status of reservation creation
+     */
+    public boolean createReservation(String timestamp, String duration,
+            int restaurantId, int customerId, int partyCount) {
+        
+        try {
+            preparedStatement = this.connection.prepareStatement("INSERT INTO Reservation (reservation_timestamp, "
+                    + "reservation_duration, restaurant_id, customer_id, party_count) VALUES (?, ?, ?, ?, ?)");
+            preparedStatement.setString(1, timestamp);
+            preparedStatement.setString(2, duration);
+            preparedStatement.setInt(3, restaurantId);
+            preparedStatement.setInt(4, customerId);
+            preparedStatement.setInt(5, partyCount);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+        
+        return false;
+    }
+	
     
 }
