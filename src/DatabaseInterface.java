@@ -44,7 +44,7 @@ public class DatabaseInterface {
      * @return success/failure of inserting a customer
      */
     public boolean insertCustomer(String username, String password,
-            Object object, String name, String phone_number) {
+            String name, String phone_number) {
         try {
             preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE my_name=?");
             preparedStatement.setString(1, username);
@@ -54,12 +54,11 @@ public class DatabaseInterface {
                 return false;
             } else {
                 
-                preparedStatement = this.connection.prepareStatement("INSERT INTO Customer (username, login_password, reservation_id, my_name, phone_number) VALUES (?, ?, ?, ?, ?)");
+                preparedStatement = this.connection.prepareStatement("INSERT INTO Customer (username, login_password, my_name, phone_number) VALUES (?, ?, ?, ?)");
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, password);
-                preparedStatement.setString(3, null);
-                preparedStatement.setString(4, name);
-                preparedStatement.setString(5, phone_number);
+                preparedStatement.setString(3, name);
+                preparedStatement.setString(4, phone_number);
                 preparedStatement.executeUpdate();
                 System.out.println("Account created.");
                 return true;
@@ -73,7 +72,7 @@ public class DatabaseInterface {
     }
 
     public boolean insertManager(String name, String username, String password,
-            String name2, String restaurantId) {
+            String restaurantId) {
         try {
             preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Manager WHERE my_name=?");
             preparedStatement.setString(1, username);
