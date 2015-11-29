@@ -12,6 +12,7 @@ public class Console {
     
     private static Scanner input = new Scanner(System.in);
     private static DatabaseInterface reservation = new DatabaseInterface();
+    private static Customer customer;
     private static Manager manager;
     
     public static void main(String[] args) {
@@ -96,12 +97,13 @@ public class Console {
         boolean done;
         // TODO successful login should go to user options
         if (userType.equals("1")) {
-            reservation.systemLogin(username, password, false);
+            customer = (Customer) reservation.systemLogin(username, password, false);
             customerOptions();
         }
         else if (userType.equals("2")) {
             manager = (Manager) reservation.systemLogin(username, password, true);
             managerOptions(manager);
+            done = true;
         }
         else{
             System.out.println("failed");
@@ -115,19 +117,19 @@ public class Console {
         boolean done = false;
         while (!done) {
             System.out.print("\nCustomer options: \n1. Create Reservation"
-                    + "\n2. View Reservations \n3. Delete Account \nEnter number> ");
+                    + "\n2. View Reservations \n3. Delete Account \n4. Quit \nEnter number> ");
             String customerInput = (input.hasNext())? input.next():null;
             switch (customerInput) {
             case "1" : 
                 createReservation();
-                done = true;
                 break;
             case "2" :
                 //viewReservation();
-                done = true;
                 break;
             case "3" :
                 //deleteAccount();
+                break;
+            case "4" :
                 done = true;
                 break;
             default :
@@ -139,17 +141,40 @@ public class Console {
 
     private static void createReservation() {
         
+        System.out.print("\nEnter date(YYYY-MM-DD)> ");
+        String date = (input.hasNextLine())? input.next():null;
         
+        System.out.print("\nEnter time(HH:MM:SS)> ");
+        String time = (input.hasNextLine())? input.next():null;
+        
+        String timestamp = date + " " + time;
+        System.out.println("timestamp: " + timestamp);
+        
+        System.out.print("\nEnter duration(HH:MM:SS)> ");
+        String duration = (input.hasNext())? input.nextLine():null;
+        input.nextLine();
+        duration = "11:11:11"; // TODO scanner bug here. 
+        System.out.print("\nEnter restaurant id> ");
+        int restaurantId = (input.hasNext())? input.nextInt():null;
+        
+        System.out.print("\nEnter party count> ");
+        int partyCount = (input.hasNext())? input.nextInt():null;
+        
+        if (reservation.createReservation(timestamp, duration, restaurantId, customer.getCustomerId(), partyCount)) {
+            System.out.println("Reservation created!");
+        } else {
+            System.out.println("Reservation failed.");
+        }
         
     }
     
     private static void managerOptions(Manager m) {
-    	boolean done = false;
+        boolean done = false;
         while (!done) {
-        	System.out.print("\nManager options: \n1. View All Reservations"
+            System.out.print("\nManager options: \n1. View All Reservations"
                     + "\n2. Delete Reservation \n3. Delete Customer Account \n4. View Statistics \nEnter number> ");
-        	
-        	String customerInput = (input.hasNext())? input.next():null;
+            
+            String customerInput = (input.hasNext())? input.next():null;
             switch (customerInput) {
             case "1" : 
                 List<Reservation> res = reservation.getAllReservations(m.getrestaurantId());
