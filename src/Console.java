@@ -97,8 +97,8 @@ public class Console {
             customerOptions();
         }
         else if (userType.equals("2")) {
-            reservation.systemLogin(username, password, true);
-            done = true;
+            Manager manager = (Manager) reservation.systemLogin(username, password, true);
+            managerOptions(manager);
         }
         else{
             System.out.println("failed");
@@ -138,6 +138,33 @@ public class Console {
         
         
         
+    }
+    
+    private static void managerOptions(Manager m) {
+    	boolean done = false;
+        while (!done) {
+        	System.out.print("\nManager options: \n1. View All Reservations"
+                    + "\n2. Delete Reservation \n3. Delete Customer Account \n4. View Statistics \nEnter number> ");
+        	
+        	String customerInput = (input.hasNext())? input.next():null;
+            switch (customerInput) {
+            case "1" : 
+                reservation.viewAllReservations(m.getrestaurantId());
+                done = true;
+                break;
+            case "2" :
+                //viewReservation();
+                done = true;
+                break;
+            case "3" :
+                //deleteAccount();
+                done = true;
+                break;
+            default :
+                System.out.println("Invalid input.");
+                break;
+            }
+        }
     }
 
     // prints the main menu options

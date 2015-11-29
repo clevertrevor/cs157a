@@ -129,5 +129,25 @@ public class DatabaseInterface {
     	return null;
     }
     
+    public void viewAllReservations(int restaurantID){
+    	try {
+			preparedStatement = this.connection.prepareStatement("SELECT * FROM Reservation left join Customer on Reservation.customer_id = Customer.customer_id WHERE restaurant_id = ? ORDER BY reservation_timestamp");
+			preparedStatement.setInt(1, restaurantID);
+			resultSet = preparedStatement.executeQuery();
+			String customerName = ""; String reservationTime = ""; String reservationDuration = ""; int partyCount = 0;
+			System.out.println("Name/Reservation Time/Reservation Duration/Party Count");
+			while(resultSet.next()){
+				customerName = resultSet.getString("my_name");
+				reservationTime = resultSet.getTimestamp("reservation_timestamp").toString();
+				reservationDuration = resultSet.getTime("reservation_duration").toString();
+				partyCount = resultSet.getInt("party_count");
+				System.out.println(customerName + "    " + reservationTime + "   " + reservationDuration + "   " + partyCount);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.toString());
+            System.out.println(e.getMessage());
+		}
+    }
+    
     
 }
