@@ -82,7 +82,29 @@ public class Console {
     
     // prints login options
     private static void printLoginOptions() {
+    	System.out.print("\nEnter your username: ");
+        String username = (input.hasNext())? input.next():null;
+        
+        System.out.print("Enter your password: ");
+        String password = (input.hasNext())? input.next():null;
+    	String userType = "";
         System.out.print("Login as:\n1. Customer\n2. Manager\nEnter number> ");
+        userType = (input.hasNext())? input.next():null;
+        boolean done = false;
+        while (!done) {
+        if (userType.equals("1")) {
+        	reservation.systemLogin(username, password, false);
+        	done = true;
+        }
+        else if (userType.equals("2")) {
+        	reservation.systemLogin(username, password, true);
+        	done = true;
+        }
+        else{
+        	System.out.println("failed");
+        	done = true;
+        }
+        }
     }
     
     // prints the main menu options

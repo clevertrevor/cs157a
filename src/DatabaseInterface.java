@@ -99,5 +99,32 @@ public class DatabaseInterface {
         return false;
     }
     
+    public boolean systemLogin(String username, String password, boolean isManager){
+    	try{
+    		if(isManager == true)
+    			preparedStatement = this.connection.prepareStatement("SELECT * FROM Manager WHERE username = ? AND login_password = ?");
+    		else
+    			preparedStatement = this.connection.prepareStatement("SELECT * FROM Customer WHERE username = ? AND login_password = ?");
+    		preparedStatement.setString(1, username);
+    		preparedStatement.setString(2, password);
+    		resultSet = preparedStatement.executeQuery();
+    		if(resultSet.next()) {
+    			String name = resultSet.getString("my_name");
+    			if(isManager == true){System.out.println("Logged in as Manager " + name);
+    			return true;
+    			}else{
+    				System.out.println("Logged in as Customer " + name);
+    				return true;
+    			}
+    		}
+    		
+    	}
+    	catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+    	return false;
+    }
+    
     
 }
