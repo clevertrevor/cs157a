@@ -62,7 +62,7 @@ INSERT INTO Customer (username, login_password, my_name, phone_number)
 	VALUES("username4", "password4", "Stephen Curry", "408-000-0004");
     
 INSERT INTO RESTAURANT(restaurant_name, capacity)
-	VALUES("Creasian", 25);
+	VALUES("Creasian", 25);    
 INSERT INTO RESTAURANT(restaurant_name, capacity)
 	VALUES("Peanuts", 50);
     

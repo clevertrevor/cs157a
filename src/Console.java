@@ -8,7 +8,7 @@ import javax.swing.*;
 public class Console {
     
     private static Scanner input = new Scanner(System.in);
-    private static Reservation reservation = new Reservation();
+    private static DatabaseInterface reservation = new DatabaseInterface();
     
     public static void main(String[] args) {
         
