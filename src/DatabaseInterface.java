@@ -263,5 +263,27 @@ public class DatabaseInterface {
         return false;
     }
     
+    /**
+     * Modifies a reservation in the database
+     * @return true/false the status of reservation creation
+     */
+    
+    public boolean modifyReservation(String timestamp, String duration, int partyCount, int reservationID) {
+        
+        try {
+            preparedStatement = this.connection.prepareStatement("UPDATE Reservation SET reservation_timestamp = ?, reservation_duration = ?, party_count = ? WHERE reservation_id = ?");
+            preparedStatement.setString(1, timestamp);
+            preparedStatement.setString(2, duration);
+            preparedStatement.setInt(3, partyCount);
+            preparedStatement.setInt(4, reservationID);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+        
+        return false;
+    }
     
 }

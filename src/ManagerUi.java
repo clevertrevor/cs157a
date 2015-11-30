@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * This class controls the UI for the customer
+ * This class controls the UI for the Manager
  */
 public class ManagerUi {
     
@@ -32,7 +32,7 @@ public class ManagerUi {
         displayManagerUi();
     }
 
-    // Displays UI for customer
+    // Displays UI for Manager
     private void displayManagerUi() {
 
         window = new JFrame("Manager");
@@ -91,6 +91,9 @@ public class ManagerUi {
         viewReservations();
     }
     
+    /**
+     * Refreshes the table with all of the reservations. Called everytime an update is made using GUI
+     */
     private void viewReservations(){
     	model.setRowCount(0);
     	table.getTableHeader().setVisible(true);
@@ -107,6 +110,9 @@ public class ManagerUi {
         scrollPane.repaint();
     }
     
+    /**
+     * Delete a reservation in the database
+     */
     private void deleteReservation(){
     	if(table.getSelectedRow() != -1){
     	List<Reservation> res = Console.reservation.getAllReservations(manager.getrestaurantId());
@@ -122,6 +128,9 @@ public class ManagerUi {
     	viewReservations();
     }
     
+    /**
+     * Delete an account in the database
+     */
     private void deleteAccount(){
     	if(table.getSelectedRow() != -1){
         	List<Reservation> res = Console.reservation.getAllReservations(manager.getrestaurantId());
@@ -137,17 +146,20 @@ public class ManagerUi {
         	viewReservations();
     }
     
+    /**
+     * Modify the details of the reservation in the database
+     */
     private void modifyDetails(){
+    	//Check to see if row in table is selected
     	if(table.getSelectedRow() != -1){
+    		//Get list of reservations
     		List<Reservation> res = Console.reservation.getAllReservations(manager.getrestaurantId());
     		Reservation temp = res.get(table.getSelectedRow());
-    		JTextField nameField = new JTextField();
+    		//Create custom dialog box
     	    JTextField timeField = new JTextField();
     	    JTextField durationField = new JTextField();
     	    JTextField countField = new JTextField();
     	    JPanel dialogPanel = new JPanel();
-    	    dialogPanel.add(new JLabel("Name:"));
-    	    dialogPanel.add(nameField);
     	    dialogPanel.add(Box.createHorizontalStrut(10));
     	    dialogPanel.add(new JLabel("Time:"));
     	    dialogPanel.add(timeField);
@@ -157,13 +169,21 @@ public class ManagerUi {
     	    dialogPanel.add(Box.createHorizontalStrut(10));
     	    dialogPanel.add(new JLabel("Party Count:"));
     	    dialogPanel.add(countField);
-    	    nameField.setText(Console.reservation.getCustomerNameByID(temp.getCustomerId()));
     	    timeField.setText(temp.getReservationTimestamp());
     	    durationField.setText(temp.getReservationDuration());
     	    countField.setText("" + temp.getPartyCount());
     	    
+    	    //Show modify dialog box
     	    int result = JOptionPane.showConfirmDialog(null, dialogPanel, 
-    	               "Please modify desired options", JOptionPane.OK_CANCEL_OPTION);
+    	               "Please modify reservations for " + Console.reservation.getCustomerNameByID(temp.getCustomerId()), JOptionPane.OK_CANCEL_OPTION);
+    	    
+    	    //If values have changed, implement query
+    	    if(!timeField.getText().equals(temp.getReservationTimestamp()) ||
+    	    		!durationField.getText().equals(temp.getReservationDuration()) ||
+    	    		!countField.getText().equals("" + temp.getPartyCount())){
+    	    	Console.reservation.modifyReservation(timeField.getText(), durationField.getText(), Integer.parseInt(countField.getText()), temp.getReservationId());
+    	    	viewReservations();
+    	    }
     	}
     }
     
