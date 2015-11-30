@@ -72,6 +72,13 @@ public class ManagerUi {
             }
         });
         
+        deleteAccountButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteAccount();
+            }
+        });
+        
         actionBox.add(scrollPane);
         mainBox.add(buttonBox);
         mainBox.add(actionBox);
@@ -110,7 +117,22 @@ public class ManagerUi {
     	}
     	
     	}
-    	scrollPane.repaint();
+    	viewReservations();
+    }
+    
+    private void deleteAccount(){
+    	if(table.getSelectedRow() != -1){
+        	List<Reservation> res = Console.reservation.getAllReservations(manager.getrestaurantId());
+        	if(Console.reservation.deleteCustomer(res.get(table.getSelectedRow()).getCustomerId()) == true){
+        		JOptionPane.showMessageDialog(window,
+                        "Delete Successful :)");
+        	}else{
+        		JOptionPane.showMessageDialog(window,
+                        "Customer could not be deleted :(");
+        	}
+        	
+        	}
+        	viewReservations();
     }
     
     
