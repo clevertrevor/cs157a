@@ -8,7 +8,9 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -20,10 +22,10 @@ import javax.swing.table.DefaultTableModel;
 public class ManagerUi {
     
     private Manager manager;
-    JScrollPane scrollPane;
-    JTable table;
-    DefaultTableModel model;
-    JFrame window;
+    private JScrollPane scrollPane;
+    private JTable table;
+    private DefaultTableModel model;
+    private JFrame window;
     
     public ManagerUi (Manager m) {
         manager = m;
@@ -49,19 +51,19 @@ public class ManagerUi {
         Box actionBox = Box.createVerticalBox();
         scrollPane = new JScrollPane();
         scrollPane.getViewport().add(table);
-        JButton viewReservationsButton = new JButton("Refresh Reservations");
+        JButton modifyDetailsButton = new JButton("Modify Details");
         JButton deleteReservationButton = new JButton("Delete Reservation");
         JButton deleteAccountButton = new JButton("Delete Customer Account");
         JButton viewStatisticsButton = new JButton("View Statistics");
-        buttonBox.add(viewReservationsButton);
+        buttonBox.add(modifyDetailsButton);
         buttonBox.add(deleteReservationButton);
         buttonBox.add(deleteAccountButton);
         buttonBox.add(viewStatisticsButton);
         
-        viewReservationsButton.addActionListener(new ActionListener() {
+        modifyDetailsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                viewReservations();
+                modifyDetails();
             }
         });
         
@@ -134,6 +136,38 @@ public class ManagerUi {
         	}
         	viewReservations();
     }
+    
+    private void modifyDetails(){
+    	if(table.getSelectedRow() != -1){
+    		List<Reservation> res = Console.reservation.getAllReservations(manager.getrestaurantId());
+    		Reservation temp = res.get(table.getSelectedRow());
+    		JTextField nameField = new JTextField();
+    	    JTextField timeField = new JTextField();
+    	    JTextField durationField = new JTextField();
+    	    JTextField countField = new JTextField();
+    	    JPanel dialogPanel = new JPanel();
+    	    dialogPanel.add(new JLabel("Name:"));
+    	    dialogPanel.add(nameField);
+    	    dialogPanel.add(Box.createHorizontalStrut(10));
+    	    dialogPanel.add(new JLabel("Time:"));
+    	    dialogPanel.add(timeField);
+    	    dialogPanel.add(Box.createHorizontalStrut(10));
+    	    dialogPanel.add(new JLabel("Duration:"));
+    	    dialogPanel.add(durationField);
+    	    dialogPanel.add(Box.createHorizontalStrut(10));
+    	    dialogPanel.add(new JLabel("Party Count:"));
+    	    dialogPanel.add(countField);
+    	    nameField.setText(Console.reservation.getCustomerNameByID(temp.getCustomerId()));
+    	    timeField.setText(temp.getReservationTimestamp());
+    	    durationField.setText(temp.getReservationDuration());
+    	    countField.setText("" + temp.getPartyCount());
+    	    
+    	    int result = JOptionPane.showConfirmDialog(null, dialogPanel, 
+    	               "Please modify desired options", JOptionPane.OK_CANCEL_OPTION);
+    	}
+    }
+    
+    
     
     
 
