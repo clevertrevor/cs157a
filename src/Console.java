@@ -18,7 +18,7 @@ import javax.swing.*;
 public class Console {
     
     private static Scanner input = new Scanner(System.in);
-    private static DatabaseInterface reservation = new DatabaseInterface();
+    public static DatabaseInterface reservation = new DatabaseInterface();
     private static Customer customer;
     private static Manager manager;
     
@@ -92,7 +92,7 @@ public class Console {
         window.add(customerOption);
         window.add(managerOption);
         
-        // add okay and cancel buttons
+        // add okay, signup, and cancel buttons
         JButton okayButton = new JButton("Login");
         JButton signupButton = new JButton("Signup");
         JButton cancelButton = new JButton("Cancel");
@@ -128,6 +128,21 @@ public class Console {
                 }   
             }
         }); // end okayButton listener
+        
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new SignupUi();
+            }
+        });
+        
+        
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                window.dispose();
+            }
+        });
         
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
