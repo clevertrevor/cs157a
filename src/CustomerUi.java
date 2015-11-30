@@ -3,6 +3,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -31,11 +32,11 @@ public class CustomerUi {
     
     public CustomerUi (Customer c) {
         customer= c;
-        displayManagerUi();
+        displayCustomerUi();
     }
 
     // Displays UI for customer
-    private void displayManagerUi() {
+    private void displayCustomerUi() {
 
         window = new JFrame("Customer");
         window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -79,7 +80,7 @@ public class CustomerUi {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                window.dispose();
+                window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
             }
         });
         
@@ -118,10 +119,10 @@ public class CustomerUi {
     // window for creating customer reservations
     protected void createReservationWindow() {
 
-        window = new JFrame("Create Reservation");
-        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        window.setBounds(0,0,400,400);
-        window.setVisible(true);
+        JFrame frame = new JFrame("Create Reservation");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(0,0,400,400);
+        frame.setVisible(true);
         
         Box verticalBox = Box.createVerticalBox();
         
@@ -172,7 +173,7 @@ public class CustomerUi {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                window.dispose();
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)); 
             }
         });
         
@@ -192,14 +193,14 @@ public class CustomerUi {
                     partyCount = Integer.parseInt(partyCountField.getText());
                 } catch (NumberFormatException error) {
                     displayPopup("Error", "Reservation failed to create");
-                    window.dispose();
+                    frame.dispose();
                     return;
                 }
                 
                 if (Console.reservation.createReservation(
                         timestamp, duration, restaurantId, customer.getCustomerId(), partyCount)) {
                     displayPopup("Success", "Reservation created!");
-                    window.dispose();
+                    frame.dispose();
                     viewReservations();
                 } 
                 
@@ -208,11 +209,12 @@ public class CustomerUi {
         
 
         
-        window.add(verticalBox);
-        window.setMinimumSize(new Dimension(300, 50));
+        frame.add(verticalBox);
+        frame.setMinimumSize(new Dimension(300, 50));
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
-        window.pack();
+        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+        frame.pack();
+        frame.setVisible(true);
         
     }
 
@@ -237,10 +239,10 @@ public class CustomerUi {
     	List<Reservation> res = Console.reservation.getCustomerReservations(customer.getCustomerId());
     	if(Console.reservation.deleteReservation(res.get(table.getSelectedRow()).getReservationId()) == true){
     		JOptionPane.showMessageDialog(window,
-                    "Delete Successful :)");
+                    "Delete Successful");
     	}else{
     		JOptionPane.showMessageDialog(window,
-                    "Reservation could not be deleted :(");
+                    "Reservation could not be deleted");
     	}
     	
     	}
