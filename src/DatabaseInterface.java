@@ -286,4 +286,21 @@ public class DatabaseInterface {
         return false;
     }
     
+    // Create a restaurant
+    public boolean createRestaurant(String restaurantName, int capacity) {
+        try {
+            preparedStatement = this.connection.prepareStatement("INSERT INTO Restaurant(restaurant_name, capacity)"
+                    + " VALUES(?, ?)");
+            preparedStatement.setString(1, restaurantName);
+            preparedStatement.setInt(2, capacity);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+            return false;
+        }
+        
+    }
+    
 }
