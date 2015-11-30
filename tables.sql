@@ -13,21 +13,21 @@ SET FOREIGN_KEY_CHECKS=1;
 -- create tables
 CREATE TABLE Customer(
 	customer_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(128) UNIQUE,
-    login_password VARCHAR(256),
+    username VARCHAR(128) UNIQUE NOT NULL,
+    login_password VARCHAR(256) NOT NULL,
     my_name VARCHAR(256),
     phone_number VARCHAR(20));
 
 CREATE TABLE Restaurant(
 	restaurant_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    restaurant_name VARCHAR(256),
+    restaurant_name VARCHAR(256) NOT NULL,
     capacity INTEGER);
 
 CREATE TABLE Manager(
 	manager_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    my_name VARCHAR(256),
-    username VARCHAR(128) UNIQUE,
-    login_password VARCHAR(256),
+    my_name VARCHAR(256) ,
+    username VARCHAR(128) UNIQUE NOT NULL,
+    login_password VARCHAR(256) NOT NULL,
     restaurant_id INTEGER,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id));
 
