@@ -1,7 +1,12 @@
 
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
+
 import javax.swing.*;
 
 /**
@@ -17,10 +22,11 @@ public class Console {
     
     public static void main(String[] args) {
         
+        reservation.connectDB();
+        showLoginGui();
+        
+        /*
         boolean quit = false;
-        
-        
-        
         if(reservation.connectDB()) {
             while (!quit) {
                 printMainMenu();
@@ -41,9 +47,103 @@ public class Console {
             }
         }
         
+        */
+        
     } // end main
     
- // prints login options and signs up user
+    
+    // Shows the GUI for users to login
+    private static void showLoginGui() {
+        
+        JFrame window = new JFrame();
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setBounds(0,0,400,400);
+        
+        window.setLayout(new GridLayout(4, 6));
+        
+        // add username and password fields
+        JTextField usernameField = new JTextField("username1");
+        window.add("usernameFile", usernameField);
+        usernameField.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                usernameField.setText("");
+            }
+        });
+        
+        JPasswordField passwordField = new JPasswordField("password1");
+        window.add("passwordField", passwordField);
+        passwordField.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e){
+                passwordField.setText("");
+            }
+        });
+        
+        // add customer and manager radio buttons
+        JRadioButton customerOption = new JRadioButton("Customer");
+        JRadioButton managerOption = new JRadioButton("Manager");
+ 
+        ButtonGroup group = new ButtonGroup();
+        group.add(customerOption);
+        group.add(managerOption);
+        window.add(customerOption);
+        window.add(managerOption);
+        
+        // add okay and cancel buttons
+        JButton okayButton = new JButton("Login");
+        JButton cancelButton = new JButton("Cancel");
+        window.add(okayButton);
+        window.add(cancelButton);
+        
+        okayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                // login with either customer, manager, or error for none selected
+                if (customerOption.isSelected()) {
+                    Customer c = (Customer) reservation.systemLogin(usernameField.getText(), 
+                            new String(passwordField.getPassword()), false);
+                    if (c == null) { // failed logging in
+                        loginErrorWindow("Customer unable to login.");
+                    } else { // successful login
+                        new CustomerUi(c);
+                    }
+                    
+                } else if (managerOption.isSelected()) {
+                    Manager m = (Manager) reservation.systemLogin(usernameField.getText(), 
+                            new String(passwordField.getPassword()), true);
+                    if (m == null) { // failed logging in
+                        loginErrorWindow("Manager unable to login.");
+                    } else { // successful login
+                        new ManagerUi(m);
+                    }
+                    
+                } else { // no login option selected
+                    loginErrorWindow("Customer or Manager must be selected");
+                }   
+            }
+        }); // end okayButton listener
+        
+        // signup button
+        JButton signupButton = new JButton("Signup");
+        window.add(signupButton);
+        
+        window.pack();
+        window.setVisible(true);
+            
+    }
+    
+    // method for displaying custom login messages
+    private static void loginErrorWindow(String message){
+        JFrame window = new JFrame("Error");
+        window.add(new JTextField(message));
+        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        window.pack();
+        window.setVisible(true);
+    }
+
+// prints login options and signs up user
     private static void printSignupOptions() {
         
         System.out.print("\nEnter your username: ");
@@ -124,10 +224,11 @@ public class Console {
                 createReservation();
                 break;
             case "2" :
-                //viewReservation();
+                viewReservations();
                 break;
             case "3" :
-                //deleteAccount();
+                deleteAccount();
+                done = true;
                 break;
             case "4" :
                 done = true;
@@ -137,6 +238,27 @@ public class Console {
                 break;
             }
         }
+    }
+    
+    // Shows the customer's reservations
+    private static void viewReservations() {
+        List<Reservation> res = reservation.getCustomerReservations(customer.getCustomerId());
+        System.out.println("Name/Time/Duration/Party Count");
+        for(Reservation r : res){
+            System.out.println(reservation.getCustomerNameByID(r.getCustomerId()) + "---" + r.getReservationTimestamp() + 
+                    "---" + r.getReservationDuration() + "---" + r.getPartyCount());
+        }
+    }
+
+    private static void deleteAccount() {
+
+        if (reservation.deleteCustomer(customer.getCustomerId())) {
+            System.out.println("Account deleted.");
+        } else {
+            System.out.println("Account failed to delete.");
+        }
+        
+        
     }
 
     private static void createReservation() {
@@ -180,8 +302,8 @@ public class Console {
                 List<Reservation> res = reservation.getAllReservations(m.getrestaurantId());
                 System.out.println("Name/Time/Duration/Party Count");
                 for(Reservation r : res){
-                	System.out.println(reservation.getCustomerNameByID(r.getCustomerId()) + "---" + r.getReservationTimestamp() + 
-                			"---" + r.getReservationDuration() + "---" + r.getPartyCount());
+                    System.out.println(reservation.getCustomerNameByID(r.getCustomerId()) + "---" + r.getReservationTimestamp() + 
+                            "---" + r.getReservationDuration() + "---" + r.getPartyCount());
                 }
                 done = true;
                 break;
