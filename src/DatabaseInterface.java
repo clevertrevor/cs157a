@@ -224,6 +224,20 @@ public class DatabaseInterface {
         
     }
     
+    public boolean deleteReservation(int reservationId) {
+
+        try {
+            preparedStatement = connection.prepareStatement("DELETE FROM Reservation WHERE reservation_id = " + reservationId);
+            preparedStatement.executeUpdate();
+            return true;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+            return false;
+        }
+        
+    }
+    
     /**
      * Creates a reservation in the database
      * @return true/false the status of reservation creation
