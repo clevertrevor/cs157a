@@ -21,7 +21,7 @@ CREATE TABLE Customer(
 CREATE TABLE Restaurant(
 	restaurant_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     restaurant_name VARCHAR(256) NOT NULL,
-    capacity INTEGER);
+    capacity INTEGER NOT NULL);
 
 CREATE TABLE Manager(
 	manager_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
