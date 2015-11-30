@@ -55,10 +55,12 @@ public class ManagerUi {
         JButton deleteReservationButton = new JButton("Delete Reservation");
         JButton deleteAccountButton = new JButton("Delete Customer Account");
         JButton viewStatisticsButton = new JButton("View Statistics");
+        JButton createRestaurantButton = new JButton("Create Restaurant");
         buttonBox.add(modifyDetailsButton);
         buttonBox.add(deleteReservationButton);
         buttonBox.add(deleteAccountButton);
         buttonBox.add(viewStatisticsButton);
+        buttonBox.add(createRestaurantButton);
         
         modifyDetailsButton.addActionListener(new ActionListener() {
             @Override
@@ -81,6 +83,13 @@ public class ManagerUi {
             }
         });
         
+        createRestaurantButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createRestaurantWindow();
+            }
+        });
+        
         actionBox.add(scrollPane);
         mainBox.add(buttonBox);
         mainBox.add(actionBox);
@@ -91,6 +100,93 @@ public class ManagerUi {
         viewReservations();
     }
     
+    
+    protected void createRestaurantWindow() { 
+        
+        window = new JFrame("Create Reservation");
+        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        window.setBounds(0,0,400,400);
+        window.setVisible(true);
+        
+        Box verticalBox = Box.createVerticalBox();
+        
+        JLabel restaurantName = new JLabel("Restaurant name: ");
+        JTextField restaurantNameField = new JTextField();
+        Box restaurantNameBox = Box.createHorizontalBox();
+        restaurantNameBox.add(restaurantName);
+        restaurantNameBox.add(restaurantNameField);
+        verticalBox.add(restaurantNameBox);
+        
+        JLabel restaurantCapacityLabel = new JLabel("Restaurant capacity: ");
+        JTextField restaurantCapacityField = new JTextField();
+        Box restaurantCapacityBox = Box.createHorizontalBox();
+        restaurantCapacityBox.add(restaurantCapacityLabel);
+        restaurantCapacityBox.add(restaurantCapacityField);
+        verticalBox.add(restaurantCapacityBox);
+        
+        // bottom buttons
+        Box buttonBox = Box.createHorizontalBox();
+        JButton createButton = new JButton("Create");
+        JButton cancelButton = new JButton("Cancel");
+        buttonBox.add(createButton);
+        buttonBox.add(cancelButton);
+        verticalBox.add(buttonBox);
+        
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                window.dispose();
+                return;
+            }
+        });
+        
+        createButton.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                String restaurantName = "";
+                int restaurantCapacity = 0;
+                
+                // check valid inputs
+                try {
+                    restaurantName = restaurantNameField.getText();
+                    restaurantCapacity = Integer.parseInt(restaurantCapacityField.getText());
+                } catch (NumberFormatException error) {
+                    displayPopup("Error", "Restaurant failed to create");
+                    window.dispose();
+                    return;
+                }
+                
+                if (Console.reservation.createRestaurant(
+                        restaurantName, restaurantCapacity)) {
+                    displayPopup("Success", "Restaurant created!");
+                    window.dispose();
+                    viewReservations();
+                } 
+                
+            }
+        });
+        
+        window.add(verticalBox);
+        window.setMinimumSize(new Dimension(300, 50));
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
+        window.pack();
+        
+    }
+    
+    private static void displayPopup(String title, String message){
+        JFrame window = new JFrame(title);
+        window.add(new JTextField(message));
+        window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        window.pack();
+        window.setMinimumSize(new Dimension(200, 30));
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
+        window.setVisible(true);
+    }
+
     /**
      * Refreshes the table with all of the reservations. Called everytime an update is made using GUI
      */
