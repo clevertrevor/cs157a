@@ -89,6 +89,7 @@ public class Console {
         ButtonGroup group = new ButtonGroup();
         group.add(customerOption);
         group.add(managerOption);
+        customerOption.setSelected(true);
         window.add(customerOption);
         window.add(managerOption);
         
