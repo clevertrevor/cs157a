@@ -133,7 +133,37 @@ public class DatabaseInterface {
         return null;
     }
     
-// Gets all reservations for a specific restaurant
+    // Returns a list of the customer's reservations
+    public List<Reservation> getCustomerReservations(int customerId){
+        
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        
+        try {
+            preparedStatement = this.connection.prepareStatement(
+                    "SELECT * FROM Reservation "
+                    + "WHERE customer_id = ? ORDER BY reservation_timestamp");
+            preparedStatement.setInt(1, customerId);
+            resultSet = preparedStatement.executeQuery();
+            
+            while(resultSet.next()){
+                String reservationTime = resultSet.getTimestamp("reservation_timestamp").toString();
+                String reservationDuration = resultSet.getTime("reservation_duration").toString();
+                int partyCount = resultSet.getInt("party_count");
+                int customerID = resultSet.getInt("customer_id");
+                int reservationID = resultSet.getInt("reservation_id");
+                int restaurantId = resultSet.getInt("restaurant_id");
+                reservations.add(new Reservation(reservationID, reservationTime, reservationDuration, restaurantId, customerID, partyCount));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+        return reservations;
+        
+    }
+    
+    // Gets all reservations for a specific restaurant
     public List<Reservation> getAllReservations(int restaurantID){
         List<Reservation> reservations = new ArrayList<Reservation>();
         
