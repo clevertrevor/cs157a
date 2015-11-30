@@ -1,5 +1,7 @@
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -92,8 +94,10 @@ public class Console {
         
         // add okay and cancel buttons
         JButton okayButton = new JButton("Login");
+        JButton signupButton = new JButton("Signup");
         JButton cancelButton = new JButton("Cancel");
         window.add(okayButton);
+        window.add(signupButton);
         window.add(cancelButton);
         
         okayButton.addActionListener(new ActionListener() {
@@ -125,10 +129,8 @@ public class Console {
             }
         }); // end okayButton listener
         
-        // signup button
-        JButton signupButton = new JButton("Signup");
-        window.add(signupButton);
-        
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
         window.pack();
         window.setVisible(true);
             
