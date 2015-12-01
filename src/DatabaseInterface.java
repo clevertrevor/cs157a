@@ -303,4 +303,46 @@ public class DatabaseInterface {
         
     }
     
+    // Return number of reservations
+    public int countReservations(int restaurantId) {
+        try {
+            int count = 0;
+            preparedStatement = this.connection.prepareStatement("SELECT count(*) FROM Reservation WHERE restaurant_id = ?");
+            preparedStatement.setInt(1, restaurantId);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) count = resultSet.getInt("count(*)");
+            return count;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+            return 0;
+        }
+        
+    }
+    
+    // Most popular reservation time
+    public String mostPopularReservationTime(int restaurantId) {
+        try {
+            String result = "";
+            preparedStatement = this.connection.prepareStatement(
+                      "  SELECT tm "
+                      + "FROM ( "
+                      + "  SELECT DATE_FORMAT(STR_TO_DATE(reservation_timestamp, '%Y-%m-%d %H:%i:%s'), '%H:%i:%s') as tm, count(reservation_timestamp) AS cnt "
+                      + "  FROM Reservation  "
+                      + "  WHERE restaurant_id = ? "
+                      + "  GROUP BY reservation_timestamp "
+                      + "  ORDER BY COUNT(reservation_timestamp) DESC LIMIT 1) T");
+            preparedStatement.setInt(1, restaurantId);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+             result = resultSet.getString(1);
+            return result;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return "";
+        }
+        
+    }
+    
 }
