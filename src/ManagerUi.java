@@ -124,11 +124,17 @@ public class ManagerUi {
                 "Total Reservations: " + reservationCount);
         mainBox.add(reservationCountLabel);
         
-        // most popular reservation date
+        // most popular reservation time
         String mostPopularTime = Console.reservation.mostPopularReservationTime(manager.getrestaurantId());
         JLabel mostPopularTimeLabel= new JLabel(
                 "Most Popular Time: " + mostPopularTime);
         mainBox.add(mostPopularTimeLabel);
+        
+        // most popular reservation day of week
+        String mostPopularDay = Console.reservation.mostPopularReservationDay(manager.getrestaurantId());
+        JLabel mostPopularDayLabel= new JLabel(
+                "Most Popular Day Of Week: " + mostPopularDay);
+        mainBox.add(mostPopularDayLabel);
         
         
         // bottom buttons
