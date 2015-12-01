@@ -3,6 +3,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.Box;
@@ -90,6 +91,13 @@ public class ManagerUi {
             }
         });
         
+        viewStatisticsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewStatistics();
+            }
+        });
+        
         actionBox.add(scrollPane);
         mainBox.add(buttonBox);
         mainBox.add(actionBox);
@@ -100,7 +108,51 @@ public class ManagerUi {
         viewReservations();
     }
     
-    
+    // JFrame that displays statistics about the db
+    protected void viewStatistics() { // TODO
+        
+        JFrame frame = new JFrame("Statistics");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(0,0,400,400);
+        frame.setVisible(true);
+        
+        Box mainBox = Box.createVerticalBox();
+        
+        // reservation count
+        int reservationCount = Console.reservation.countReservations(manager.getrestaurantId());
+        JLabel reservationCountLabel = new JLabel(
+                "Total Reservations: " + reservationCount);
+        mainBox.add(reservationCountLabel);
+        
+        // most popular reservation date
+        String mostPopularTime = Console.reservation.mostPopularReservationTime(manager.getrestaurantId());
+        JLabel mostPopularTimeLabel= new JLabel(
+                "Most Popular Time: " + mostPopularTime);
+        mainBox.add(mostPopularTimeLabel);
+        
+        
+        // bottom buttons
+        Box buttonBox = Box.createHorizontalBox();
+        JButton okayButton = new JButton("Okay");
+        buttonBox.add(okayButton);
+        mainBox.add(buttonBox);
+        
+        okayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)); 
+            }
+        });
+
+
+        frame.setMinimumSize(new Dimension(300, 50));
+        frame.add(mainBox);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+        frame.pack();
+        
+    }
+
     protected void createRestaurantWindow() { 
         
         window = new JFrame("Create Reservation");
