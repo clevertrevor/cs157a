@@ -53,7 +53,7 @@ CREATE TABLE ReservationArchive(
     customer_id INTEGER,
     party_count INTEGER,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id)););
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id));
  
 CREATE TRIGGER on_delete_user BEFORE DELETE ON Customer FOR EACH ROW
 DELETE FROM Reservation WHERE old.customer_id = customer_id;
