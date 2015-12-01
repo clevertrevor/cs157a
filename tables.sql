@@ -76,7 +76,18 @@ INSERT INTO Manager(my_name, username, login_password, restaurant_id)
 	VALUES("Ginni Rometty", "username3", "password3", 2);
     
 INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
-	VALUES('2015-12-03 18:00:00', '03:00:00',  1, 1, 20);
+	VALUES('2015-12-02 18:00:00', '03:00:00',  1, 1, 20);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-02 19:00:00', '02:00:00',  1, 1, 1);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-02 20:00:00', '01:00:00',  1, 1, 1);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-02 19:00:00', '01:00:00',  1, 1, 1);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-02 20:00:00', '02:00:00',  1, 1, 1);
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2015-12-03 20:00:00', '01:00:00',  1, 1, 1);
+    
 INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
 	VALUES('2015-12-03 18:00:00', '01:00:00',  2, 1, 40);
 INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
