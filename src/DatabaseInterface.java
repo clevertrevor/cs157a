@@ -345,4 +345,31 @@ public class DatabaseInterface {
         
     }
     
+    // Most popular reservation date
+    public String mostPopularReservationDay(int restaurantId) {
+        try {
+            String result = "";
+            preparedStatement = this.connection.prepareStatement(
+                      "SELECT day_index FROM ( "
+                      + "SELECT DAYNAME(DATE_FORMAT(STR_TO_DATE("
+                      + "reservation_timestamp, '%Y-%m-%d %H:%i:%s'), '%Y-%m-%d')) as day_index,"
+                      + " count(reservation_timestamp) AS cnt "
+                      + "FROM Reservation  "
+                      + "WHERE restaurant_id = ? "
+                      + "GROUP BY day_index "
+                      + "ORDER BY COUNT(reservation_timestamp) DESC "
+                      + "LIMIT 1 ) A");
+            preparedStatement.setInt(1, restaurantId);
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+             result = resultSet.getString(1);
+            return result;
+        } catch(Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace();
+            return "";
+        }
+        
+    }
+    
 }
