@@ -1,14 +1,10 @@
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.Scanner;
-
 import javax.swing.*;
 
 /**
@@ -23,16 +19,17 @@ public class Console {
         
         reservation.connectDB();
         
-        // show login gui
-        JFrame window = new JFrame();
+        JFrame window = new JFrame("RReservation v0.1");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setBounds(0,0,400,400);
         
-        window.setLayout(new GridLayout(4, 6));
+        Box mainBox = Box.createVerticalBox();
         
         // add username and password fields
         JTextField usernameField = new JTextField("username1");
-        window.add("usernameFile", usernameField);
+        Box usernameBox = Box.createHorizontalBox();
+        usernameBox.add(usernameField);
+        mainBox.add(usernameBox);
         usernameField.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e){
@@ -40,8 +37,11 @@ public class Console {
             }
         });
         
+        
         JPasswordField passwordField = new JPasswordField("password1");
-        window.add("passwordField", passwordField);
+        Box passwordBox = Box.createHorizontalBox();
+        passwordBox.add(passwordField);
+        mainBox.add(passwordBox);
         passwordField.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e){
@@ -53,22 +53,33 @@ public class Console {
         JRadioButton customerOption = new JRadioButton("Customer");
         JRadioButton managerOption = new JRadioButton("Manager");
  
+        
         ButtonGroup group = new ButtonGroup();
         group.add(customerOption);
         group.add(managerOption);
         customerOption.setSelected(true);
-        window.add(customerOption);
-        window.add(managerOption);
+        
+        Box radioBox = Box.createHorizontalBox();
+        radioBox.add(customerOption);
+        radioBox.add(managerOption);
+        
+        mainBox.add(radioBox);
         
         // add okay, signup, and cancel buttons
-        JButton okayButton = new JButton("Login");
+        JButton loginButton = new JButton("Login");
         JButton signupButton = new JButton("Signup");
         JButton cancelButton = new JButton("Cancel");
-        window.add(okayButton);
-        window.add(signupButton);
-        window.add(cancelButton);
         
-        okayButton.addActionListener(new ActionListener() {
+        Box okayBox = Box.createHorizontalBox();
+        okayBox.add(loginButton);
+        mainBox.add(okayBox);
+        
+        Box signupCancelBox = Box.createHorizontalBox();
+        signupCancelBox.add(signupButton);
+        signupCancelBox.add(cancelButton);
+        mainBox.add(signupCancelBox);
+        
+        loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
@@ -109,6 +120,7 @@ public class Console {
             }
         });
         
+        window.add(mainBox);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         window.setLocation(dim.width/2-window.getSize().width/2, dim.height/2-window.getSize().height/2);
         window.setMinimumSize(new Dimension(300, 50));
