@@ -51,6 +51,7 @@ CREATE TABLE ReservationArchive( -- todo change this once archiving is figured o
  
 CREATE TRIGGER on_delete_user BEFORE DELETE ON Customer FOR EACH ROW
 DELETE FROM Reservation WHERE old.customer_id = customer_id;
+
  
 -- insert predefined tuples
 

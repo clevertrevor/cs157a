@@ -3,7 +3,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -245,6 +250,7 @@ public class DatabaseInterface {
     public boolean createReservation(String timestamp, String duration,
             int restaurantId, int customerId, int partyCount) {
         
+    	if(isRestaurantFull(timestamp, duration, partyCount, restaurantId) == false){
         try {
             preparedStatement = this.connection.prepareStatement("INSERT INTO Reservation (reservation_timestamp, "
                     + "reservation_duration, restaurant_id, customer_id, party_count) VALUES (?, ?, ?, ?, ?)");
@@ -259,7 +265,8 @@ public class DatabaseInterface {
             System.out.println(e.toString());
             System.out.println(e.getMessage());
         }
-        
+    	}
+        System.out.println("Reservation Failed");
         return false;
     }
     
@@ -284,6 +291,92 @@ public class DatabaseInterface {
         }
         
         return false;
+    }
+    
+    /**
+     * UGLY BUT WORKS. Checks if the restaurant is full. If at any time during the specified reservation
+     * the restaurant is full, the function will return false. 
+     * @return true if reservation will bring past capacity
+     */
+    private boolean isRestaurantFull(String timestamp, String duration, int partyCount, int restaurant_id){
+    	try {
+            preparedStatement = this.connection.prepareStatement(
+                    "SELECT * FROM Reservation left join Restaurant on Reservation.restaurant_id = Restaurant.restaurant_id WHERE Restaurant.restaurant_id = ?");
+            preparedStatement.setInt(1, restaurant_id);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next() == false){
+            	return false;
+            } else {
+            	resultSet.previous();
+            }
+            TreeMap<Date, Integer> peaks = new TreeMap<Date, Integer>();
+            Calendar cA = Calendar.getInstance();
+            Calendar cB = Calendar.getInstance();
+            Date tempDate;
+            Time tempTime;
+            int capacity = 0;
+            while(resultSet.next()){
+            	capacity = resultSet.getInt("capacity");
+            	tempDate = resultSet.getTimestamp("reservation_timestamp");
+            	tempTime = resultSet.getTime("reservation_duration");
+            	cA.setTime(tempDate);
+            	cB.setTime(tempTime);
+            	int extraMinutes = 0;
+            	if(cB.get((Calendar.MINUTE)) > 1 && cB.get((Calendar.MINUTE)) <= 30)extraMinutes = 1;
+            	else if(cB.get((Calendar.MINUTE)) > 1 && cB.get((Calendar.MINUTE)) > 30);
+				int cycles = (cB.get((Calendar.HOUR)) * 2) + extraMinutes;
+				if(peaks.containsKey(cA.getTime())){
+					peaks.replace(cA.getTime(), peaks.get(cA.getTime()), peaks.get(cA.getTime()) + resultSet.getInt("party_count"));
+				}
+				else{
+					peaks.put(cA.getTime(), resultSet.getInt("party_count"));
+				}
+				for(int i = 1; i < cycles; i++){
+					cA.add(Calendar.MINUTE, 30);
+					if(peaks.containsKey(cA.getTime())){
+						peaks.replace(cA.getTime(), peaks.get(cA.getTime()), peaks.get(cA.getTime()) + resultSet.getInt("party_count"));
+					}
+					else{
+						peaks.put(cA.getTime(), resultSet.getInt("party_count"));
+					}
+				}
+            }
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            Date parsedTimestamp = dateFormat.parse(timestamp);
+            dateFormat = new SimpleDateFormat("hh:mm:ss");
+            Date parsedTime = dateFormat.parse(duration);
+            cA.setTime(parsedTimestamp);
+            cB.setTime(parsedTime);
+            int extraMinutes = 0;
+        	if(cB.get((Calendar.MINUTE)) > 1 && cB.get((Calendar.MINUTE)) <= 30)extraMinutes = 1;
+        	else if(cB.get((Calendar.MINUTE)) > 1 && cB.get((Calendar.MINUTE)) > 30);
+			int cycles = (cB.get((Calendar.HOUR)) * 2) + extraMinutes;
+			if(peaks.containsKey(cA.getTime())){
+				peaks.replace(cA.getTime(), peaks.get(cA.getTime()), peaks.get(cA.getTime()) + partyCount);
+			}
+			else{
+				peaks.put(cA.getTime(), partyCount);
+			}
+			for(int i = 1; i < cycles; i++){
+				cA.add(Calendar.MINUTE, 30);
+				if(peaks.containsKey(cA.getTime())){
+					peaks.replace(cA.getTime(), peaks.get(cA.getTime()), peaks.get(cA.getTime()) + partyCount);
+				}
+				else{
+					peaks.put(cA.getTime(), partyCount);
+				}
+			}
+			
+			for(Integer num : peaks.values()){
+				if(num > capacity){
+					return true;
+				}
+			}
+    	} catch(Exception e) {
+            System.out.println(e.toString());
+            System.out.println(e.getMessage());
+        }
+    	return false;
     }
     
 }

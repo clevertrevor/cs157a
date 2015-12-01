@@ -63,7 +63,7 @@ public class ManagerUi {
         modifyDetailsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modifyDetails();
+                modifyReservation();
             }
         });
         
@@ -149,7 +149,7 @@ public class ManagerUi {
     /**
      * Modify the details of the reservation in the database
      */
-    private void modifyDetails(){
+    private void modifyReservation(){
     	//Check to see if row in table is selected
     	if(table.getSelectedRow() != -1){
     		//Get list of reservations
