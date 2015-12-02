@@ -57,11 +57,14 @@ public class ManagerUi {
         JButton deleteAccountButton = new JButton("Delete Customer Account");
         JButton viewStatisticsButton = new JButton("View Statistics");
         JButton createRestaurantButton = new JButton("Create Restaurant");
+        JButton viewArchivedButton = new JButton("Archived Reservations");
+        
         buttonBox.add(modifyDetailsButton);
         buttonBox.add(deleteReservationButton);
         buttonBox.add(deleteAccountButton);
         buttonBox.add(viewStatisticsButton);
         buttonBox.add(createRestaurantButton);
+        buttonBox.add(viewArchivedButton);
         
         modifyDetailsButton.addActionListener(new ActionListener() {
             @Override
@@ -98,6 +101,13 @@ public class ManagerUi {
             }
         });
         
+        viewArchivedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewArchived();
+            }
+        });
+        
         actionBox.add(scrollPane);
         mainBox.add(buttonBox);
         mainBox.add(actionBox);
@@ -108,8 +118,59 @@ public class ManagerUi {
         viewReservations();
     }
     
+    // archives old reservations and then displays them in a table
+    protected void viewArchived() {
+
+        Console.reservation.archiveOldReservations();
+        
+        JFrame frame = new JFrame("Archived Reservations");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setBounds(0,0,400,400);
+        frame.setVisible(true);
+        
+        Box mainBox = Box.createVerticalBox();
+        
+        // table setup
+        JTable table;
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID");
+        model.addColumn("Name");
+        model.addColumn("Time");
+        model.addColumn("Duration");
+        model.addColumn("Count");
+        table = new JTable(model);
+        table.getTableHeader().setVisible(false);
+        
+        scrollPane = new JScrollPane();
+        scrollPane.getViewport().add(table);
+
+        mainBox.add(scrollPane);
+        model.setRowCount(0);
+        table.getTableHeader().setVisible(true);
+        
+        // create table data
+        List<Reservation> res = Console.reservation.getArchivedReservations(manager.getrestaurantId());
+        String[] reservationData = new String[5];
+        for(Reservation r : res){
+            reservationData[0] = r.getReservationId() + "";
+            reservationData[1] = Console.reservation.getCustomerNameByID(r.getCustomerId());
+            reservationData[2] = r.getReservationTimestamp(); 
+            reservationData[3] = r.getReservationDuration();
+            reservationData[4] = "" + r.getPartyCount();
+            model.addRow(reservationData);
+        }
+        scrollPane.repaint();
+        
+        frame.setMinimumSize(new Dimension(800, 50));
+        frame.add(mainBox);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+        frame.pack();
+        
+    }
+
     // JFrame that displays statistics about the db
-    protected void viewStatistics() { // TODO
+    protected void viewStatistics() {
         
         JFrame frame = new JFrame("Statistics");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

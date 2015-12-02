@@ -11,6 +11,7 @@ SET FOREIGN_KEY_CHECKS=1;
 
 -- allow events to run
 SET GLOBAL event_scheduler = ON;
+SET SQL_SAFE_UPDATES = 0;
 
 
 -- create tables
@@ -46,7 +47,7 @@ CREATE TABLE Reservation(
     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id));
 
 CREATE TABLE ReservationArchive( 
-	id INTEGER NOT NULL PRIMARY KEY,
+	reservation_id INTEGER NOT NULL PRIMARY KEY,
     reservation_timestamp TIMESTAMP,
     reservation_duration TIME, 
     restaurant_id INTEGER,
@@ -54,9 +55,7 @@ CREATE TABLE ReservationArchive(
     party_count INTEGER,
     FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id),
     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id));
- 
-CREATE TRIGGER on_delete_user BEFORE DELETE ON Customer FOR EACH ROW
-DELETE FROM Reservation WHERE old.customer_id = customer_id;
+
 
 -- triggers 
 
@@ -66,19 +65,6 @@ BEFORE DELETE ON Customer FOR EACH ROW
 DELETE FROM Reservation 
 WHERE old.customer_id = customer_id;
 
--- delete reservations past their start time
-/*CREATE EVENT IF NOT EXISTS rreservation.cleanup_reservations
-ON SCHEDULE
-    EVERY 1 MINUTE
-DO
-BEGIN 
-DELETE FROM rreservation.reservation
-WHERE reservation_timestamp < NOW();
-END
-*/
-
--- DELETE FROM your_table WHERE TIMESTAMPDIFF(MINUTE,session_time,NOW()) > 30;
-
 -- deleted reservation goes into reservationarchive
 CREATE TRIGGER trigger_delete_reservation
 BEFORE DELETE ON reservation
@@ -87,9 +73,24 @@ FOR EACH ROW
     SELECT * 
       FROM reservation
      WHERE reservation_id = OLD.reservation_id; 
->>>>>>> branch 'master' of https://github.com/clevertrevor/cs157a.git
+    
+    
+-- delete reservations past their start time
+-- triggered on viewing reservationarchive
+DELIMITER $$
+DROP PROCEDURE IF EXISTS cleanup_old_reservations$$
 
- 
+CREATE PROCEDURE cleanup_old_reservations ()
+BEGIN
+START TRANSACTION;
+  DELETE FROM reservation
+  WHERE reservation_timestamp < NOW();
+COMMIT;
+END$$
+
+DELIMITER ;
+     
+
 -- insert predefined tuples
 
 INSERT INTO Customer (username, login_password, my_name, phone_number)
@@ -132,5 +133,7 @@ INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_
 	VALUES('2015-12-03 18:00:00', '01:00:00',  2, 1, 10);
     
 -- past reservations
+INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
+	VALUES('2000-02-21 03:30:00', '00:15:00',  1, 1, 13);
 INSERT INTO Reservation(reservation_timestamp, reservation_duration, restaurant_id, customer_id, party_count)
 	VALUES('2014-11-03 05:00:00', '00:30:00',  2, 1, 10);
