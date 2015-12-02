@@ -48,6 +48,7 @@ public class CustomerUi {
         model.addColumn("Time");
         model.addColumn("Duration");
         model.addColumn("Count");
+        model.addColumn("Restaurant");
         
         table = new JTable(model);
         table.getTableHeader().setVisible(false);
@@ -148,11 +149,11 @@ public class CustomerUi {
         durationBox .add(durationField);
         verticalBox.add(durationBox);
         
-        JLabel restaurantIdLabel = new JLabel("RestaurantID: ");
-        JTextField restaurantIdField = new JTextField();
+        JLabel restaurantIdLabel = new JLabel("Restaurant Name/ID: ");
+        JTextField restaurantNameField = new JTextField();
         Box restaurantIdBox = Box.createHorizontalBox();
         restaurantIdBox.add(restaurantIdLabel);
-        restaurantIdBox.add(restaurantIdField);
+        restaurantIdBox.add(restaurantNameField);
         verticalBox.add(restaurantIdBox);
         
         JLabel partyCountLabel = new JLabel("partyCount: ");
@@ -189,8 +190,18 @@ public class CustomerUi {
                 try {
                     timestamp = dateField.getText() + " " + timeField.getText();
                     duration = durationField.getText();
-                    restaurantId = Integer.parseInt(restaurantIdField.getText());
                     partyCount = Integer.parseInt(partyCountField.getText());
+                    if(isNumeric(restaurantNameField.getText())){
+                    	restaurantId = Integer.parseInt(restaurantNameField.getText());
+                    }
+                    else{
+                    	restaurantId = Console.reservation.getRestaurantIDByName(restaurantNameField.getText());
+                    	if(restaurantId == -1){
+                    		displayPopup("Error", "Reservation failed to create");
+                            frame.dispose();
+                            return;
+                    	}
+                    }
                 } catch (NumberFormatException error) {
                     displayPopup("Error", "Reservation failed to create");
                     frame.dispose();
@@ -207,7 +218,6 @@ public class CustomerUi {
             }
         });
         
-
         
         frame.add(verticalBox);
         frame.setMinimumSize(new Dimension(300, 50));
@@ -223,12 +233,13 @@ public class CustomerUi {
     	table.getTableHeader().setVisible(true);
     	List<Reservation> res = Console.reservation.getCustomerReservations(customer.getCustomerId());
         int count = 0;
-        String[] reservationData = new String[4];
+        String[] reservationData = new String[5];
         for(Reservation r : res){
             reservationData[0] = Console.reservation.getCustomerNameByID(r.getCustomerId());
             reservationData[1] = r.getReservationTimestamp(); 
             reservationData[2] = r.getReservationDuration();
             reservationData[3] = "" + r.getPartyCount();
+            reservationData[4] = Console.reservation.getRestaurantNameByID(r.getRestaurantId());
             model.addRow(reservationData);
         }
         scrollPane.repaint();
@@ -316,5 +327,9 @@ public class CustomerUi {
         window.setVisible(true);
     }
     
+    private static boolean isNumeric(String str)
+    {
+      return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
 
 }

@@ -195,6 +195,7 @@ public class DatabaseInterface {
         return reservations;
     }
     
+    //Gets customer name with their ID in database
     public String getCustomerNameByID(int customerID){
         try {
             preparedStatement = this.connection.prepareStatement("SELECT my_name FROM Customer WHERE customer_id=?");
@@ -209,6 +210,39 @@ public class DatabaseInterface {
     }
         return "No Name Found";
     }
+    
+    //Gets restaurant name by it's ID in database
+    public String getRestaurantNameByID(int restaurantID){
+        try {
+            preparedStatement = this.connection.prepareStatement("SELECT restaurant_name FROM Restaurant WHERE restaurant_id=?");
+            preparedStatement.setInt(1, restaurantID);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getString("restaurant_name");
+            }
+    }catch (SQLException e) {
+        System.out.println(e.toString());
+        System.out.println(e.getMessage());
+    }
+        return "Not Found";
+    }
+    
+    //Gets restaurant ID by name in database
+    public int getRestaurantIDByName(String name){
+        try {
+            preparedStatement = this.connection.prepareStatement("SELECT restaurant_id FROM Restaurant WHERE restaurant_name=?");
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                return resultSet.getInt("restaurant_id");
+            }
+    }catch (SQLException e) {
+        System.out.println(e.toString());
+        System.out.println(e.getMessage());
+    }
+        return -1;
+    }
+    
     
         /**
      * Deletes this customer from the database
